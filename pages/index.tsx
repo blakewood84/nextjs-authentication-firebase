@@ -1,26 +1,8 @@
-import useAuth from "@/hooks/useAuth";
 import Head from "next/head";
-import app from "@/config/firebaseConfig";
-import { getAuth } from "firebase/auth";
-import { useEffect } from "react";
 
 // Going to the root route "/" will check for:
 // Is the user authenticated? Goto Dashboard
 // Is the user not authenticated? Goto Sign In page
-
-function checkAuthState() {
-  const auth = getAuth(app);
-  return new Promise((resolve) => {
-    auth.onAuthStateChanged((user) => {
-      console.log("user checkAuthState: ", user);
-      if (user) {
-        resolve(user);
-      } else {
-        resolve(null);
-      }
-    });
-  });
-}
 
 export default function Home() {
   return (
@@ -36,23 +18,7 @@ export default function Home() {
 }
 
 export async function getServerSideProps() {
-  const user = await checkAuthState();
-
-  console.log("user: ", user);
-
-  if (user == null) {
-    return {
-      redirect: {
-        destination: "/sign_in",
-        permanent: false,
-      },
-    };
-  } else {
-    return {
-      redirect: {
-        destination: "/dashboard",
-        permanent: false,
-      },
-    };
-  }
+  return {
+    props: {},
+  };
 }
