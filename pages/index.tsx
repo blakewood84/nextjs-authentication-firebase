@@ -1,22 +1,28 @@
 import useAuth from "@/hooks/useAuth";
 import Head from "next/head";
-
-import { useRouter } from "next/router";
+import app from "@/config/firebaseConfig";
+import { getAuth } from "firebase/auth";
+import { useEffect } from "react";
 
 // Going to the root route "/" will check for:
 // Is the user authenticated? Goto Dashboard
 // Is the user not authenticated? Goto Sign In page
 
+function checkAuthState() {
+  const auth = getAuth(app);
+  return new Promise((resolve) => {
+    auth.onAuthStateChanged((user) => {
+      console.log("user checkAuthState: ", user);
+      if (user) {
+        resolve(user);
+      } else {
+        resolve(null);
+      }
+    });
+  });
+}
+
 export default function Home() {
-  const { user } = useAuth();
-  const router = useRouter();
-
-  if (user === undefined) return null;
-
-  if (user !== null) router.push("/dashboard");
-
-  if (user === null) router.push("/sign_in");
-
   return (
     <>
       <Head>
@@ -27,4 +33,26 @@ export default function Home() {
       </Head>
     </>
   );
+}
+
+export async function getServerSideProps() {
+  const user = await checkAuthState();
+
+  console.log("user: ", user);
+
+  if (user == null) {
+    return {
+      redirect: {
+        destination: "/sign_in",
+        permanent: false,
+      },
+    };
+  } else {
+    return {
+      redirect: {
+        destination: "/dashboard",
+        permanent: false,
+      },
+    };
+  }
 }

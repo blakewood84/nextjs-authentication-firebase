@@ -7,6 +7,8 @@ import {
   User,
 } from "firebase/auth";
 
+import Router from "next/router";
+
 export const AuthContext = React.createContext<any | null>(null);
 
 type AuthContextType = {
@@ -22,12 +24,12 @@ export const AuthContextProvider = ({
   const [user, setUser] = useState<User | null | undefined>(undefined);
 
   useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      setUser(user);
+    const unsubscribe = auth.onAuthStateChanged((user) => {
       console.log("user: ", user);
+      setUser(user);
     });
     return () => {
-      console.log("dispose");
+      unsubscribe();
     };
   }, []);
 
@@ -35,6 +37,7 @@ export const AuthContextProvider = ({
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         console.log("signed in!");
+        Router.push("/dashboard");
       })
       .catch((error) => {
         console.log("Error: ", error);
@@ -45,11 +48,24 @@ export const AuthContextProvider = ({
     signOut(auth);
   }, []);
 
+  const checkAuthState = useCallback(() => {
+    return new Promise((resolve) => {
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          resolve(user);
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  }, []);
+
   const values: any = useMemo(
     () => ({
       user,
       signInUser,
       signOutUser,
+      checkAuthState,
     }),
     [user]
   );
