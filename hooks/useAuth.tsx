@@ -9,9 +9,9 @@ import {
 
 export const AuthContext = React.createContext<any | null>(null);
 
-interface AuthContextType {
+type AuthContextType = {
   user: boolean;
-}
+};
 
 export const AuthContextProvider = ({
   children,
@@ -19,11 +19,12 @@ export const AuthContextProvider = ({
   children: JSX.Element;
 }) => {
   const auth = getAuth(app);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null | undefined>(undefined);
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       setUser(user);
+      console.log("user: ", user);
     });
     return () => {
       console.log("dispose");

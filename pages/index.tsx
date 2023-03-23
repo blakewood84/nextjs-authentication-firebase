@@ -1,11 +1,22 @@
+import useAuth from "@/hooks/useAuth";
 import Head from "next/head";
-import SignIn from "./sign_in";
+
+import { useRouter } from "next/router";
 
 // Going to the root route "/" will check for:
 // Is the user authenticated? Goto Dashboard
 // Is the user not authenticated? Goto Sign In page
 
 export default function Home() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  if (user === undefined) return null;
+
+  if (user !== null) router.push("/dashboard");
+
+  if (user === null) router.push("/sign_in");
+
   return (
     <>
       <Head>
@@ -14,7 +25,6 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <SignIn />
     </>
   );
 }

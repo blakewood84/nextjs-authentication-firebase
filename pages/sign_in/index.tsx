@@ -1,9 +1,12 @@
 import styles from "@/styles/Home.module.css";
 import useAuth from "@/hooks/useAuth";
+import { useRouter } from "next/router";
 
 export default function SignIn() {
-  const { signInUser, signOutUser } = useAuth();
-  console.log("rebuild SignIn");
+  const router = useRouter();
+  const { signInUser, signOutUser, user } = useAuth();
+
+  if (user) router.push("/dashboard");
 
   return (
     <main className={styles.main}>
