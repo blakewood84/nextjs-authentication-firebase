@@ -1,5 +1,5 @@
 import { User } from "firebase/auth";
-// import nookies from "nookies";
+import nookies from "nookies";
 import React, { useContext, useEffect, useState } from "react";
 import app from "@/config/firebaseConfig";
 import { getAuth, browserSessionPersistence } from "firebase/auth";
@@ -21,11 +21,11 @@ export function AuthProvider({ children }: any) {
         console.log("user: ", user);
         if (!user) {
           setUser(null);
-          // nookies.set(undefined, "token", "", { path: "/" });
+          nookies.set(undefined, "token", "", { path: "/" });
         } else {
           const token = await user.getIdToken();
           setUser(user);
-          // nookies.set(undefined, "token", token, { path: "/" });
+          nookies.set(undefined, "token", token, { path: "/" });
         }
       });
     });
@@ -34,7 +34,9 @@ export function AuthProvider({ children }: any) {
   // force refresh the token every 10 minutes
   useEffect(() => {
     const handle = setInterval(async () => {
+      console.log("refreshing token!");
       const user = auth.currentUser;
+      console.log("user: ", user);
       if (user) await user.getIdToken(true);
     }, 10 * 60 * 1000);
 

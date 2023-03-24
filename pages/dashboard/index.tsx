@@ -1,8 +1,17 @@
 import Protected from "@/components/protected";
 
 import Router from "next/router";
+import { getAuth } from "firebase/auth";
+import app from "@/config/firebaseConfig";
 
 export default function Dashboard() {
+  const auth = getAuth(app);
+
+  const handleSignOut = async () => {
+    await auth.signOut();
+    Router.replace("/sign_in");
+  };
+
   return (
     <Protected>
       <main
@@ -14,7 +23,7 @@ export default function Dashboard() {
         }}
       >
         <h1>Dashboard</h1>
-        {/* <button onClick={() => signOutUser()}>Logout</button> */}
+        <button onClick={() => handleSignOut()}>Logout</button>
       </main>
     </Protected>
   );

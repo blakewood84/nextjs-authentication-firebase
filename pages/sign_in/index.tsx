@@ -1,10 +1,22 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
-import useAuth from "@/hooks/useAuth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import app from "@/config/firebaseConfig";
+import Router from "next/router";
 
 export default function SignIn() {
-  // const { signInUser, signOutUser } = useAuth();
-  console.log("render");
+  const auth = getAuth(app);
+
+  const handleSignIn = () => {
+    signInWithEmailAndPassword(auth, "blake@test.com", "Test1234*")
+      .then((userCredential) => {
+        Router.push("/dashboard");
+      })
+      .catch((error) => {
+        console.log("error: ", error);
+      });
+  };
+
   return (
     <>
       <Head>
@@ -20,13 +32,10 @@ export default function SignIn() {
           <input placeholder="password" style={{ marginBottom: "10px" }} />
           <button
             style={{ marginBottom: "10px" }}
-            onClick={() => {
-              // signInUser("blake@test.com", "Test1234*");
-            }}
+            onClick={() => handleSignIn()}
           >
             Sign In
           </button>
-          {/* <button onClick={() => signOutUser()}>Sign Out</button> */}
         </div>
       </main>
     </>

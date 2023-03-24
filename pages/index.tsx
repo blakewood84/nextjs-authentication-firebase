@@ -1,4 +1,7 @@
+import { GetServerSidePropsContext } from "next";
 import Head from "next/head";
+import nookies from "nookies";
+import { firebaseAdmin } from "@/config/firebaseAdmin";
 
 // Going to the root route "/" will check for:
 // Is the user authenticated? Goto Dashboard
@@ -17,8 +20,28 @@ export default function Home() {
   );
 }
 
-export async function getServerSideProps() {
-  return {
-    props: {},
-  };
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  try {
+    const cookies = nookies.get(context);
+    console.log("cookies: ", cookies);
+    const token = await firebaseAdmin.auth().verifyIdToken(cookies.token);
+    console.log("token: ", token);
+
+    return {
+      props: { message: "Verified token" },
+      redirect: {
+        destination: "/dashboard",
+        permanent: false,
+      },
+    };
+  } catch (error) {
+    console.log("error: ", error);
+    return {
+      props: {},
+      redirect: {
+        destination: "/sign_in",
+        permanent: false,
+      },
+    };
+  }
 }
