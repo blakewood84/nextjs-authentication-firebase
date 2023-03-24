@@ -23,9 +23,7 @@ export default function Home() {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   try {
     const cookies = nookies.get(context);
-    console.log("cookies: ", cookies);
-    const token = await firebaseAdmin.auth().verifyIdToken(cookies.token);
-    console.log("token: ", token);
+    await firebaseAdmin.auth().verifyIdToken(cookies.token);
 
     return {
       props: { message: "Verified token" },
